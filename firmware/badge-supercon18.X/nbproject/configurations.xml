@@ -90,10 +90,10 @@
         <targetDevice>PIC32MX370F512H</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>pk4hybrid</platformTool>
+        <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.10</languageToolchainVersion>
-        <platform>2</platform>
+        <platform>3</platform>
       </toolsSet>
       <packs>
         <pack name="PIC32MX_DFP" vendor="Microchip" version="1.0.23"/>
@@ -101,6 +101,9 @@
       <compileType>
         <linkerTool>
           <linkerLibItems>
+            <linkerLibFileItem>../../../lib-timing/lib-timing--pic32mx370f512h.X/dist/default/production/lib-timing--pic32mx370f512h.X.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../lib-i2c/lib-i2c--pic32mx370f512h.X/dist/default/production/lib-i2c--pic32mx370f512h.X.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../lib-wii/lib-wii--pic32mx370f512h.X/dist/default/production/lib-wii--pic32mx370f512h.X.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
@@ -130,7 +133,8 @@
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="true"/>
         <property key="exclude-floating-point" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories"
+                  value="..\..\..\lib-timing\include;..\..\..\lib-i2c\include;..\..\..\lib-wii\include"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
@@ -248,7 +252,7 @@
         <property key="mitcm" value=""/>
         <property key="mstacktcm" value="false"/>
         <property key="relaxed-math" value="false"/>
-        <property key="save-temps" value="false"/>
+        <property key="save-temps" value="true"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
       <PICkit3PlatformTool>
