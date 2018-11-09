@@ -13,7 +13,14 @@ int16_t main(void)
 	hw_init();
 	badge_init();	
 	if (KEY_BRK==0) post();
-	if ((SHOW_SPLASH)&(K_SHIFTR==1)) boot_animation();
+//==================================================================================================
+//	[CUSTOMIZATION]>	Override splash screen logic so you must press both shift keys in order 
+//						to show the splash screen (the HW layout requires K_SHIFTL to be pressed 
+//						before K_SHIFTR is reckognized).
+//--------------------------------------------------------------------------------------------------
+	//if ((SHOW_SPLASH)&(K_SHIFTR==1)) boot_animation();
+	if ((SHOW_SPLASH)&(K_SHIFTR==0)) boot_animation();
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	badge_menu();
 	while (1); //menu is never left, but anyway
 	}
