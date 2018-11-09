@@ -299,11 +299,92 @@ void badge_menu(void)
 				srand(*(char*)0xBF800610);
 				++random_has_been_seeded;
 				}
+			
+//==================================================================================================
+//	[CUSTOMIZATION]>	Rolling menu that does not require typing in numerical selection by hand.
+//--------------------------------------------------------------------------------------------------
+		{
+			/*/ 
 			if (char_out==K_UP) char_out='U';
 			if (char_out==K_DN) char_out='D';
 			if (char_out==K_LT) char_out='L';
 			if (char_out==K_RT) char_out='R';
-			stdio_c(char_out);
+			// */
+			
+			// Define variables used in customization. Please note that 'static' is used to preserve 
+			// values after exiting scope of '{..}'. Also, the scope surrounds the if...else... to 
+			// allow access to required variables within both the if and else statements.
+			static uint8_t		menu[11][20]		= {{"1\0"}, {"2\0"}, {"3\0"}, {"4\0"}, {"5\0"}, {"6\0"}, {"7\0"}, {"UUDDLRLRba\0"}, {"nya\0"}, {"mario\0"}, {"hackaday\0"}};	// Values used within internal buffer to simulate relevant key presses.
+			static uint8_t		size				= 11;						// Size of menu.
+			static int8_t		entry				= 0;						// Tracks which entry in menu is active [1 indexed]
+			static uint32_t		actualMenuPointer	= 0;						// Used to track the amount of text printed on screen (vs inside internal buffer). Erased first time used in 'else' statement.
+			int8_t				index				= 0;
+			char				tmp[100];
+			
+			// Handle navigation buttons.
+			if( char_out==K_UP || char_out==K_DN || char_out==K_LT || char_out==K_RT )
+			{
+				
+				// shift entry based on button press.
+				if( char_out == K_UP )
+					++entry;
+				else if( char_out == K_DN )
+					--entry;
+				
+				// Wrap menu (circular buffer).
+				if(entry < 1)
+					entry = size;
+				else if( entry > size )
+					entry = 1;
+				
+				// Set internal buffer to appropriate value to simulate correct key press.
+				menu_pointer = 0;
+				while( menu[(entry - 1)][index] != '\0' )
+				{
+					menu_buff[menu_pointer++] = menu[(entry - 1)][index++];
+				}
+				menu_buff[menu_pointer] = 0;
+				
+				// Determine string to present to user.
+				switch(entry)
+				{
+					case 1:		sprintf(&tmp[0], "[%d] Hackaday BASIC\0",			entry);	break;
+					case 2:		sprintf(&tmp[0], "[%d] CP/M @ Z80\0",				entry);	break;
+					case 3:		sprintf(&tmp[0], "[%d] Tiny Basic @ 8080\0",		entry);	break;
+					case 4:		sprintf(&tmp[0], "[%d] Play Badgetris!\0",			entry);	break;
+					case 5:		sprintf(&tmp[0], "[%d] Zork @ CP/M @ Z80\0",		entry);	break;
+					case 6:		sprintf(&tmp[0], "[%d] Puzzle\0",					entry);	break;
+					case 7:		sprintf(&tmp[0], "[%d] User Program\0",				entry);	break;
+					case 8:		sprintf(&tmp[0], "[+] Play Snake\0"						);	break;
+					case 9:		sprintf(&tmp[0], "[+] Become Engrossed by Nya\0"		);	break;
+					case 10:	sprintf(&tmp[0], "[+] Play Mario\0"						);	break;
+					case 11:	sprintf(&tmp[0], "[+] Hackaday Logo\0"					);	break;
+				}
+				
+				// Track the number of characters to print to screen to override if non-navigation 
+				// button pressed. Doing so allows for usual backspace key functionality.
+				actualMenuPointer	= strlen(&tmp[0]);
+				
+				// Update screen.
+				clear_prompt();
+				stdio_write(&tmp[0]);
+			}
+			else
+			{
+				// Override internal buffer pointer with value from most recent navigation button 
+				// press and erase tracking value to prevent further overrides.
+				if( actualMenuPointer > 0)
+				{
+					menu_pointer		= actualMenuPointer;
+					actualMenuPointer	= 0;
+				}
+				
+				// Print character to screen.
+				stdio_c(char_out);
+			}
+		}
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
 			if (char_out==BACKSPACE)
 				{
 				if (menu_pointer)
@@ -418,7 +499,15 @@ void badge_menu(void)
 				menu_buff[menu_pointer] = 0;
 				}
 				
-			else
+//==================================================================================================
+//	[CUSTOMIZATION]>	Preventing buffer issues when rolling menu patch above is present (do not 
+//						add characters to internal buffer twice).
+//--------------------------------------------------------------------------------------------------
+			// Add entry to internal buffer so long as not already handled by navigation button case 
+			// above.
+			else if( char_out!=K_UP && char_out!=K_DN && char_out!=K_LT && char_out!=K_RT )
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				
 				{
 				menu_buff[menu_pointer++] = char_out;
 				if (menu_pointer >= COMMAND_MAX-1) 
