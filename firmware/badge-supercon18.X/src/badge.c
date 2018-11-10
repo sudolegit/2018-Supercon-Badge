@@ -11,10 +11,12 @@
 #include "Z80/sim.h"
 #include "Z80/simglb.h"
 
-#include "wii_lib.h"
 
-WiiLib_Device	m_WiiDevice;
-
+//==================================================================================================
+//	[CUSTOMIZATION]>	Hook in reference to external Wii interface functionality.
+//--------------------------------------------------------------------------------------------------
+#include "wii_interface.h"
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 uint16_t basic_loads (int8_t * data, uint16_t maxlen);
@@ -1446,25 +1448,13 @@ void __ISR(_TIMER_5_VECTOR, IPL3AUTO) Timer5Handler(void)
     
 	key_temp = keyb_tasks();
 	
-	{
-		static tmp = 5;
-		if( m_WiiDevice.status == WII_LIB_DEVICE_STATUS_NOT_INITIALIZED )
-		{
-			WiiLib_Init( I2C1, SYS_CLK, WII_LIB_TARGET_DEVICE_NUNCHUCK, TRUE, &m_WiiDevice );
-		}
-		else
-		{
-			if( !(--tmp) )
-			{
-				WiiLib_PollStatus(&m_WiiDevice);
-				/*/ 
-				if( WiiLib_PollStatus(&m_WiiDevice) == WII_LIB_RC_SUCCESS )
-					ProcessWiiInterface(&m_WiiDevice);
-				// */
-				tmp = 5;
-			}
-		}
-	}
+	
+//==================================================================================================
+//	[CUSTOMIZATION]>	Override keypress determined based on state of Nunchuck.
+//--------------------------------------------------------------------------------------------------
+	WiiInterface_Refresh(&key_temp);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
     
 	if (key_temp>0)
 		{

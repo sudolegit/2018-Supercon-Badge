@@ -29,6 +29,7 @@
       <itemPath>src/vt100.h</itemPath>
       <itemPath>src/puzzle.h</itemPath>
       <itemPath>src/nyancat.h</itemPath>
+      <itemPath>src/wii_interface.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -71,6 +72,7 @@
       <itemPath>src/nyancat.c</itemPath>
       <itemPath>src/user_program.c</itemPath>
       <itemPath>src/puzzle.c</itemPath>
+      <itemPath>src/wii_interface.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -294,6 +296,7 @@
         <property key="UART3" value="true"/>
         <property key="UART4" value="true"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>
