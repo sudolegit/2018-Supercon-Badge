@@ -11,6 +11,10 @@
 #include "Z80/sim.h"
 #include "Z80/simglb.h"
 
+#include "wii_lib.h"
+
+WiiLib_Device	m_WiiDevice;
+
 
 
 uint16_t basic_loads (int8_t * data, uint16_t maxlen);
@@ -1439,8 +1443,30 @@ void __ISR(_TIMER_5_VECTOR, IPL3AUTO) Timer5Handler(void)
 
     if (handle_display)
 		tft_disp_buffer_refresh_part((uint8_t *)(disp_buffer),(uint8_t *)color_buffer);
-    key_temp = keyb_tasks();
-    if (key_temp>0)
+    
+	key_temp = keyb_tasks();
+	
+	{
+		static tmp = 5;
+		if( m_WiiDevice.status == WII_LIB_DEVICE_STATUS_NOT_INITIALIZED )
+		{
+			WiiLib_Init( I2C1, SYS_CLK, WII_LIB_TARGET_DEVICE_NUNCHUCK, TRUE, &m_WiiDevice );
+		}
+		else
+		{
+			if( !(--tmp) )
+			{
+				WiiLib_PollStatus(&m_WiiDevice);
+				/*/ 
+				if( WiiLib_PollStatus(&m_WiiDevice) == WII_LIB_RC_SUCCESS )
+					ProcessWiiInterface(&m_WiiDevice);
+				// */
+				tmp = 5;
+			}
+		}
+	}
+    
+	if (key_temp>0)
 		{
 		key_buffer[key_buffer_ptr++] = key_temp;
 		auto_pwrdn_counter = 0;

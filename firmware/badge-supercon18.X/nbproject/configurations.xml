@@ -101,9 +101,9 @@
       <compileType>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibFileItem>../../../lib-timing/lib-timing--pic32mx370f512h.X/dist/default/production/lib-timing--pic32mx370f512h.X.a</linkerLibFileItem>
-            <linkerLibFileItem>../../../lib-i2c/lib-i2c--pic32mx370f512h.X/dist/default/production/lib-i2c--pic32mx370f512h.X.a</linkerLibFileItem>
             <linkerLibFileItem>../../../lib-wii/lib-wii--pic32mx370f512h.X/dist/default/production/lib-wii--pic32mx370f512h.X.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../lib-i2c/lib-i2c--pic32mx370f512h.X/dist/default/production/lib-i2c--pic32mx370f512h.X.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../lib-timing/lib-timing--pic32mx370f512h.X/dist/default/production/lib-timing--pic32mx370f512h.X.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
