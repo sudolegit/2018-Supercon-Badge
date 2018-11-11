@@ -21,4 +21,4 @@
 //--------------------------------------------------------------------------------------------------
 void	WiiInterface_Refresh(	uint8_t *key_temp	);
 
-#endif	__WII_INTERFACE_H__
+#endif	// __WII_INTERFACE_H__

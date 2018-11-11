@@ -57,14 +57,16 @@ void WiiInterface_Refresh(uint8_t *key)
 {
 	static uint8_t		throttle		= WII_INTERFACE_THROTTLE_COUNT;
 	
-	if( m_WiiDevice.status == WII_LIB_DEVICE_STATUS_NOT_INITIALIZED )
+	if( !(--throttle) )
 	{
-		WiiLib_Init( I2C1, SYS_CLK, WII_LIB_TARGET_DEVICE_NUNCHUCK, TRUE, &m_WiiDevice );
-	}
-	else
-	{
-		if( !(--throttle) )
+		if( m_WiiDevice.status == WII_LIB_DEVICE_STATUS_STRUCTURE_NOT_DEFINED )
 		{
+			WiiLib_Init( I2C1, SYS_CLK, WII_LIB_TARGET_DEVICE_NUNCHUCK, TRUE, &m_WiiDevice );
+		}
+		else
+		{
+			WiiLib_DoMaintenance(&m_WiiDevice);
+			
 			if( WiiLib_PollStatus(&m_WiiDevice) == WII_LIB_RC_SUCCESS )
 			{
 				switch( m_WiiDevice.target )
@@ -81,10 +83,10 @@ void WiiInterface_Refresh(uint8_t *key)
 						break;
 				}
 			}
-			
-			throttle = WII_INTERFACE_THROTTLE_COUNT;
-			
 		}
+		
+		throttle = WII_INTERFACE_THROTTLE_COUNT;
+		
 	}
 }
 
@@ -103,7 +105,8 @@ void WiiInterface_Refresh(uint8_t *key)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void WiiInterface_ProcessNunchuck(uint8_t *key)
 {
-	// To Do:	Add key override
-	// EX:		*key = BACKSPACE;
+	// Add functions for enabling and disabling ignore of repeated key-press values.
+	// Add support for key press states. Don't forget to find new home position when z pressed.
+	*key = 'B';
 }
 
