@@ -27,7 +27,8 @@ WiiLib_Device		m_WiiDevice;												// Instance of Wii target that is located
 //==================================================================================================
 //	PRIVATE FUNCTION PROTOTYPES
 //--------------------------------------------------------------------------------------------------
-static void		WiiInterface_ProcessNunchuck(	uint8_t *key	);
+static void		WiiInterface_ProcessNunchuck(			uint8_t *key	);
+static void		WiiInterface_ProcessClassicController(	uint8_t *key	);
 
 
 
@@ -47,15 +48,16 @@ static void		WiiInterface_ProcessNunchuck(	uint8_t *key	);
 //!	@note			This function is invoked each time Timer-5 fires. That timer loop is used to 
 //!					control polling of the keyboard as well as refreshing of the screen. We need 
 //!					to throttle how often we interact with the Wii target to avoid issues. 
-//!					Presently, Timer-5 runs at ~8-12 ms tick. Looking to delay roughly 50-60 ms 
-//!					so the 'throttle' is set to '5' for 'WII_INTERFACE_THROTTLE_COUNT'.
+//!					Presently, Timer-5 runs at ~8-12 ms tick. Looking to delay roughly 50 or 100 
+//!					ms so the 'throttle' is set to '5' or '10' based on if target is a nunchuck or 
+///!				a classic controller.
 //!	
 //!	@param[in,out]	*key				Current key press determined by core of project that may 
 //!										be overridden. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void WiiInterface_Refresh(uint8_t *key)
 {
-	static uint8_t		throttle		= WII_INTERFACE_THROTTLE_COUNT;
+	static uint8_t		throttle		= WII_INTERFACE_THROTTLE_COUNT_NUNCHUCK;
 	
 	if( !(--throttle) )
 	{
@@ -76,6 +78,9 @@ void WiiInterface_Refresh(uint8_t *key)
 						break;
 					
 					case WII_LIB_TARGET_DEVICE_CLASSIC_CONTROLLER:
+						WiiInterface_ProcessClassicController(key);
+						break;
+					
 					case WII_LIB_TARGET_DEVICE_MOTION_PLUS:
 					case WII_LIB_TARGET_DEVICE_MOTION_PLUS_PASS_NUNCHUCK:
 					case WII_LIB_TARGET_DEVICE_MOTION_PLUS_PASS_CLASSIC:
@@ -85,8 +90,14 @@ void WiiInterface_Refresh(uint8_t *key)
 			}
 		}
 		
-		throttle = WII_INTERFACE_THROTTLE_COUNT;
-		
+		if( m_WiiDevice.target == WII_LIB_TARGET_DEVICE_CLASSIC_CONTROLLER )
+		{
+			throttle = WII_INTERFACE_THROTTLE_COUNT_CLASSIC_CONTTROLLER;
+		}
+		else
+		{
+			throttle = WII_INTERFACE_THROTTLE_COUNT_NUNCHUCK;
+		}
 	}
 }
 
@@ -104,6 +115,21 @@ void WiiInterface_Refresh(uint8_t *key)
 //!										be overridden. 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void WiiInterface_ProcessNunchuck(uint8_t *key)
+{
+	// Add functions for enabling and disabling ignore of repeated key-press values.
+	// Add support for key press states. Don't forget to find new home position when z pressed.
+	*key = 'A';
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//!	@brief			Interprets the state of the (global) Wii target as if it is a Wii Classic 
+//!					Controller device and overrides the provided key value appropriately.
+//!	
+//!	@param[in,out]	*key				Current key press determined by core of project that may 
+//!										be overridden. 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+static void WiiInterface_ProcessClassicController(uint8_t *key)
 {
 	// Add functions for enabling and disabling ignore of repeated key-press values.
 	// Add support for key press states. Don't forget to find new home position when z pressed.
