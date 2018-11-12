@@ -390,8 +390,20 @@ void badge_menu(void)
 			}
 		}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			
-			if (char_out==BACKSPACE)
+
+
+//==================================================================================================
+//	[CUSTOMIZATION]>	Disable delete key for menu since left and right arrows do not allow 
+//						positioning to a relevant position to use the key and not ignoring it breaks 
+//						the buffer.
+//--------------------------------------------------------------------------------------------------
+			if (char_out==K_DEL)
+			{
+				// do nothing
+			}
+			//if (char_out==BACKSPACE)
+			else if (char_out==BACKSPACE)
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 				{
 				if (menu_pointer)
 					{
