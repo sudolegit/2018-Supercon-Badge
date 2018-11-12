@@ -19,7 +19,8 @@
 //==================================================================================================
 //	GLOBAL VARIABLES
 //--------------------------------------------------------------------------------------------------
-WiiLib_Device		m_WiiDevice;												// Instance of Wii target that is located on I2C bus.
+WiiLib_Device		m_WiiDevice;																	// Instance of Wii target that is located on I2C bus.
+uint8_t				m_repeatKeys		= WII_INTERFACE_DEFAULT_SEND_REPEAT_KEYS;					// Flag used to determine if repeated key presses on a target device should be ignored or utilized (TRUE == send repeated keys).
 
 
 
@@ -29,6 +30,8 @@ WiiLib_Device		m_WiiDevice;												// Instance of Wii target that is located
 //--------------------------------------------------------------------------------------------------
 static void		WiiInterface_ProcessNunchuck(			uint8_t *key	);
 static void		WiiInterface_ProcessClassicController(	uint8_t *key	);
+static void		WiiInterface_EnableRepeatedKeys(		void			);
+static void		WiiInterface_DisableRepeatedKeys(		void			);
 
 
 
@@ -107,6 +110,24 @@ void WiiInterface_Refresh(uint8_t *key)
 //==================================================================================================
 //	PRIVATE FUNCTIONS
 //--------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//!	@brief			Enables sending the same key value multiple times.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+static void WiiInterface_EnableRepeatedKeys( void )
+{
+	m_repeatKeys = TRUE;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//!	@brief			Disables sending the same key value multiple times.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+static void WiiInterface_DisableRepeatedKeys( void )
+{
+	m_repeatKeys = FALSE;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //!	@brief			Interprets the state of the (global) Wii target as if it is a Wii Nunchuck 
 //!					device and overrides the provided key value appropriately.
