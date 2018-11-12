@@ -137,9 +137,92 @@ static void WiiInterface_DisableRepeatedKeys( void )
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void WiiInterface_ProcessNunchuck(uint8_t *key)
 {
-	// Add functions for enabling and disabling ignore of repeated key-press values.
-	// Add support for key press states. Don't forget to find new home position when z pressed.
-	*key = 'A';
+	static uint8_t		flagAccelActive		= FALSE;
+	static uint8_t		prevKey				= 0;
+	uint8_t				tmpKey				= 0;
+	int16_t				pos = (int16_t)WII_INTERFACE_THRESHOLD_ANALOG;
+	int16_t				neg = (int16_t)-WII_INTERFACE_THRESHOLD_ANALOG;
+	
+	// Do actions based on c-button state.
+	if( m_WiiDevice.interfaceCurrent.buttonC )
+	{
+		// Toggle repeated keys.
+		if( m_WiiDevice.interfaceRelative.analogLeftY > WII_INTERFACE_THRESHOLD_ANALOG )
+		{
+			if( m_repeatKeys )
+				WiiInterface_DisableRepeatedKeys();
+			else
+				WiiInterface_EnableRepeatedKeys();
+		}
+		// Reset device
+		else if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_INTERFACE_THRESHOLD_ANALOG )
+		{
+			RCONbits.EXTR = 1;
+			SoftReset();
+		}
+		// Hit enter
+		else
+		{
+			tmpKey = K_ENT;
+		}
+		
+		flagAccelActive = FALSE;
+		
+	}
+	// Utilize accelerometers for position movement:
+	else if( m_WiiDevice.interfaceCurrent.buttonZL )
+	{
+		if( flagAccelActive == FALSE )
+		{
+			WiiLib_SetNewHomePosition( &m_WiiDevice );
+			flagAccelActive = TRUE;
+		}
+		else
+		{
+			if( abs(m_WiiDevice.interfaceRelative.accelX) > abs(m_WiiDevice.interfaceRelative.accelY) )
+			{
+				if(	m_WiiDevice.interfaceRelative.accelX < -WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+					tmpKey = K_LT;
+				else if( m_WiiDevice.interfaceRelative.accelX > WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+					tmpKey = K_RT;
+			}
+			else
+			{
+				if( m_WiiDevice.interfaceRelative.accelY > WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+					tmpKey = K_DN;
+				else if( m_WiiDevice.interfaceRelative.accelY < -WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+					tmpKey = K_UP;
+			}
+		}
+	}
+	// Utilize analog joystick for position movement.
+	else
+	{
+		if( abs(m_WiiDevice.interfaceRelative.analogLeftX) > abs(m_WiiDevice.interfaceRelative.analogLeftY) )
+		{
+			if(	m_WiiDevice.interfaceRelative.analogLeftX < -WII_INTERFACE_THRESHOLD_ANALOG )
+				tmpKey = K_LT;
+			else if( m_WiiDevice.interfaceRelative.analogLeftX > WII_INTERFACE_THRESHOLD_ANALOG )
+				tmpKey = K_RT;
+		}
+		else
+		{
+			if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_INTERFACE_THRESHOLD_ANALOG )
+				tmpKey = K_DN;
+			else if( m_WiiDevice.interfaceRelative.analogLeftY > WII_INTERFACE_THRESHOLD_ANALOG )
+				tmpKey = K_UP;
+		}
+		
+		flagAccelActive = FALSE;
+		
+	}
+	
+	// Only override key value if repeating keys is allowed or the key is unique.
+	if( tmpKey != 0 && (m_repeatKeys || prevKey != tmpKey) )
+		*key = tmpKey;
+	
+	prevKey = tmpKey;
+	
 }
 
 
@@ -152,8 +235,6 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void WiiInterface_ProcessClassicController(uint8_t *key)
 {
-	// Add functions for enabling and disabling ignore of repeated key-press values.
-	// Add support for key press states. Don't forget to find new home position when z pressed.
 	*key = 'B';
 }
 
