@@ -8,6 +8,7 @@
 // Pressing '9' on the keyboard restarts music if muted, otherwise no effect.
 
 #include "nyancat.h"
+#include "wii_interface.h"
 
 #ifdef NYANCAT_DEMO
 
@@ -83,7 +84,7 @@ void nyancat(void)
     enable_display_scanning(0); //Shut off auto-scanning of character buffer
     sound_set_note(0,2); // We're only using 2 out of 3 voices
     
-    while(1) //Loop forever
+    while(!WiiInterface_ExitToMenu()) //Loop forever
     {
         // Is it time for the next frame?
         if (millis() >= time_for_next_frame)

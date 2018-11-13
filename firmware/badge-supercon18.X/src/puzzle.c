@@ -3,6 +3,7 @@
  ************************************/
 
 #include "badge_user.h"
+#include "wii_interface.h"
 
 #define SHUFFLE_ROW		4
 #define TILE_ROW		8
@@ -298,7 +299,7 @@ void puzzle_loop(void)
 
 	redraw_screen(shuffle_array, tile_array, score_array, cursory);
 	
-	while(1) //Loop forever
+	while(!WiiInterface_ExitToMenu()) //Loop forever
 		{
 
 		/* React to user input */

@@ -1,4 +1,5 @@
 #include "tune_player.h"
+#include "wii_interface.h"
 
 void play_music_array(const unsigned char * arr, unsigned char length, const unsigned int * tempo_arr)
 	{
@@ -6,6 +7,8 @@ void play_music_array(const unsigned char * arr, unsigned char length, const uns
 	for (i=0; i<(length/4); i++)
 		{
 		unsigned char index = i*4;
+		if(WiiInterface_ExitToMenu())
+			return;
 		sound_play_notes(*(arr+index), *(arr+index+1), *(arr+index+2), *(tempo_arr+*(arr+index+3)));
 		}
 	}

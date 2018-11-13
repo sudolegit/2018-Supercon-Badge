@@ -20,7 +20,8 @@
 //	GLOBAL VARIABLES
 //--------------------------------------------------------------------------------------------------
 WiiLib_Device		m_WiiDevice;																	// Instance of Wii target that is located on I2C bus.
-uint8_t				m_repeatKeys		= WII_INTERFACE_DEFAULT_SEND_REPEAT_KEYS;					// Flag used to determine if repeated key presses on a target device should be ignored or utilized (TRUE == send repeated keys).
+uint8_t				m_flagRepeatKeys	= WII_INTERFACE_DEFAULT_SEND_REPEAT_KEYS;					// Flag used to determine if repeated key presses on a target device should be ignored or utilized (TRUE == send repeated keys).
+uint8_t				m_flagExitToMenu	= FALSE;													// Flag indicating that we should exit any existing function and return to the main menu.
 
 
 
@@ -39,6 +40,36 @@ static void		WiiInterface_DisableRepeatedKeys(		void			);
 //==================================================================================================
 //	PUBLIC FUNCTIONS
 //--------------------------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//!	@brief			Returns the present value for the flag used to track if we should bail out of a 
+//!					program and back to the main menu.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t WiiInterface_ExitToMenu( void )
+{
+	return m_flagExitToMenu;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//!	@brief			Enables flag used to track if we should bail out of a program and back to the 
+//!					main menu.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void WiiInterface_EnableExitToMenu( void )
+{
+	m_flagExitToMenu = TRUE;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//!	@brief			Disables flag used to track if we should bail out of a program and back to the 
+//!					main menu.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void WiiInterface_DisableExitToMenu( void )
+{
+	m_flagExitToMenu = FALSE;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //!	@brief			Handle initialization and polling of Wii target devices. The state of the Wii 
 //!					target is used to [potentially] override the provided key value.
@@ -115,7 +146,7 @@ void WiiInterface_Refresh(uint8_t *key)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void WiiInterface_EnableRepeatedKeys( void )
 {
-	m_repeatKeys = TRUE;
+	m_flagRepeatKeys = TRUE;
 }
 
 
@@ -124,7 +155,7 @@ static void WiiInterface_EnableRepeatedKeys( void )
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void WiiInterface_DisableRepeatedKeys( void )
 {
-	m_repeatKeys = FALSE;
+	m_flagRepeatKeys = FALSE;
 }
 
 
@@ -149,16 +180,15 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 		// Toggle repeated keys.
 		if( m_WiiDevice.interfaceRelative.analogLeftY > WII_INTERFACE_THRESHOLD_ANALOG )
 		{
-			if( m_repeatKeys )
+			if( m_flagRepeatKeys )
 				WiiInterface_DisableRepeatedKeys();
 			else
 				WiiInterface_EnableRepeatedKeys();
 		}
-		// Reset device
+		// Exit back to main menu
 		else if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_INTERFACE_THRESHOLD_ANALOG )
 		{
-			RCONbits.EXTR = 1;
-			SoftReset();
+			WiiInterface_EnableExitToMenu();
 		}
 		// Hit enter
 		else
@@ -218,7 +248,7 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 	}
 	
 	// Only override key value if repeating keys is allowed or the key is unique.
-	if( tmpKey != 0 && (m_repeatKeys || prevKey != tmpKey) )
+	if( tmpKey != 0 && (m_flagRepeatKeys || prevKey != tmpKey) )
 		*key = tmpKey;
 	
 	prevKey = tmpKey;

@@ -11,6 +11,7 @@
 
 
 #include "badge_user.h"
+#include "wii_interface.h"
 
 void user_program_init(void)
 	{
@@ -36,7 +37,7 @@ void user_program_loop(void)
 	video_gotoxy(5,14);
 	stdio_write("Waiting for you to press any key...");
 	
-	while(1) //Loop forever
+	while(!WiiInterface_ExitToMenu()) //Loop forever
 		{
 		/* Example of a non-blocking delay */
 		static uint32_t delay_until = 0;
@@ -76,7 +77,7 @@ void user_program_loop(void)
 			uint16_t x = 0;
 			uint8_t y = 0;
 			uint32_t colorshift = 0;
-			while(1) //Loop forever
+			while(!WiiInterface_ExitToMenu()) //Loop forever
 				{
 				/* Draw a 1x1 box at x,y -- color is using XOR trick but should be format 0x00RRGGBB */
 				tft_fill_area (x, y, 1, 1, (x^(uint32_t)y)+colorshift);

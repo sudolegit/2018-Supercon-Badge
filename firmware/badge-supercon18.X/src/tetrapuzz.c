@@ -2,6 +2,7 @@
 #include "tetrapuzz.h"
 #include "box_game.h"
 #include <stdint.h>
+#include "wii_interface.h"
 
 //FIXME: these should probably not be globals
 uint32_t  wait_until;
@@ -14,7 +15,7 @@ void tetrapuzz(void)
 	{
 	tetrapuzz_init();
 	
-	while(1)
+	while(!WiiInterface_ExitToMenu())
 		{
 		
 		//This is just a rolling increment kind of fake random

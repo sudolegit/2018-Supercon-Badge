@@ -2,6 +2,7 @@
 #include "hw.h"
 #include "disp.h"
 #include <stdlib.h>
+#include "wii_interface.h"
 
 #define BACKGROUND white
 #define FOREGROUND blue
@@ -285,7 +286,7 @@ uint16_t get_node_list_length(uint16_t node1, uint16_t node2)
 int play_snake(void)
 	{ 
 	snake_init();
-	while(1)
+	while(!WiiInterface_ExitToMenu())
 		{
 		if (millis() > TimingDelay)
 			{

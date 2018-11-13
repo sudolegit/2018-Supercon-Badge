@@ -9,6 +9,14 @@
 
 
 //==================================================================================================
+//	INCLUDES
+//--------------------------------------------------------------------------------------------------
+#include <stdio.h>
+
+
+
+
+//==================================================================================================
 //	CONSTANTS
 //--------------------------------------------------------------------------------------------------
 #define	WII_INTERFACE_THROTTLE_COUNT_NUNCHUCK				10					//!< Number of times to skip over call to function (see comments for 'WiiInterface_Refresh()'). Equates to a ~100ms delay.
@@ -25,7 +33,9 @@
 //==================================================================================================
 //	PUBIC FUNCTION PROTOTYPES
 //--------------------------------------------------------------------------------------------------
-void	WiiInterface_Refresh(	uint8_t *key_temp	);
-
+void		WiiInterface_Refresh(			uint8_t *key_temp	);
+uint8_t		WiiInterface_ExitToMenu(		void				);
+void		WiiInterface_EnableExitToMenu(	void				);
+void		WiiInterface_DisableExitToMenu(	void				);
 
 #endif	// __WII_INTERFACE_H__

@@ -308,6 +308,7 @@ void badge_menu(void)
 			
 //==================================================================================================
 //	[CUSTOMIZATION]>	Rolling menu that does not require typing in numerical selection by hand.
+//						Also handles resetting the screen when exiting to main menu.
 //--------------------------------------------------------------------------------------------------
 		{
 			/*/ 
@@ -327,8 +328,33 @@ void badge_menu(void)
 			int8_t				index				= 0;
 			char				tmp[100];
 			
+			// Return main menu to original state.
+			if( WiiInterface_ExitToMenu() )
+			{
+				// Ensure we only do this once:
+				WiiInterface_DisableExitToMenu();
+				
+				// Disable any and all sounds:
+				sound_set_note(0,0);
+				sound_set_note(0,1);
+				sound_set_note(0,2);
+				
+				// Return screen to original state:
+				enable_display_scanning(1);
+				video_clrscr();
+				video_set_color(15,0);
+				set_cursor_state(1);
+				showmenu();
+				show_version();
+				
+				// Return menu navigation back to first entry:
+				entry = 0;
+				
+				// HACK:  Set key to enter to force screen refresh.
+				char_out = NEWLINE;
+			}
 			// Handle navigation buttons.
-			if( char_out==K_UP || char_out==K_DN || char_out==K_LT || char_out==K_RT )
+			else if( char_out==K_UP || char_out==K_DN || char_out==K_LT || char_out==K_RT )
 			{
 				
 				// shift entry based on button press.
@@ -442,18 +468,18 @@ void badge_menu(void)
 					{
 					video_clrscr();
 					init_basic();
-					while (1) loop_basic();
+					while (!WiiInterface_ExitToMenu()) loop_basic();
 					}
 				else if (strcmp(menu_buff,"2")==0)
 					{
 					video_clrscr();
 					init_z80_cpm();
-					while (1) loop_z80_cpm();
+					while (!WiiInterface_ExitToMenu()) loop_z80_cpm();
 					}			
 				else if (strcmp(menu_buff,"3")==0)
 					{
 					init_8080_basic();
-					while (1) loop_8080_basic();
+					while (!WiiInterface_ExitToMenu()) loop_8080_basic();
 					}
 				else if (strcmp(menu_buff,"4")==0)
 					{
@@ -470,17 +496,17 @@ void badge_menu(void)
 					video_set_color(15,0);
 					wait_ms(2000);
 					init_z80_cpm();
-					while (1) loop_z80_cpm();
+					while (!WiiInterface_ExitToMenu()) loop_z80_cpm();
 					}
 				else if (strcmp(menu_buff,"6")==0)
 					{
 					init_puzzle();
-					while (1) loop_puzzle();
+					while (!WiiInterface_ExitToMenu()) loop_puzzle();
 					}
 				else if (strcmp(menu_buff,"7")==0)
 					{
 					init_userprog();
-					while (1) loop_userprog();
+					while (!WiiInterface_ExitToMenu()) loop_userprog();
 					}
 #ifdef NYANCAT_DEMO
 				else if (strcmp(menu_buff,"nya")==0)
@@ -759,7 +785,7 @@ void show_wrencher(void)
 	wait_ms(200);
 	i = 0;
 	uint8_t loopbreak = 0;
-	while(1)
+	while(!WiiInterface_ExitToMenu())
 		{
 		loopbreak = playriff(i++);
 		if (loopbreak) break;
