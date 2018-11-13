@@ -174,7 +174,7 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 	{
 		if( flagAccelActive == FALSE )
 		{
-			WiiLib_SetNewHomePosition( &m_WiiDevice );
+			WiiLib_SaveCurrentPositionAsHome( &m_WiiDevice );
 			flagAccelActive = TRUE;
 		}
 		else
