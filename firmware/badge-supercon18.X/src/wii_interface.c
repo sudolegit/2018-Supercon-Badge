@@ -266,70 +266,27 @@ static void WiiInterface_ProcessClassicController(uint8_t *key)
 	static uint8_t		prevKey				= 0;
 	uint8_t				tmpKey				= 0;
 	
-	// Exit back to main menu
+	// Toggle support for repeated keys:
+	if( m_WiiDevice.interfaceCurrent.buttonX || m_WiiDevice.interfaceCurrent.buttonY )
+		WiiInterface_EnableRepeatedKeys();
+	else
+		WiiInterface_DisableRepeatedKeys();
+	
+	// Exit back to main menu:
 	if( m_WiiDevice.interfaceCurrent.buttonHome )
-		//WiiInterface_EnableExitToMenu();
-		tmpKey = 'H';
-	else if( m_WiiDevice.interfaceCurrent.buttonA )
-		tmpKey = 'A';
-	else if( m_WiiDevice.interfaceCurrent.buttonB )
-		tmpKey = 'B';
-	else if( m_WiiDevice.interfaceCurrent.buttonLeftTrigger )
-		tmpKey = '1';
-	else if( m_WiiDevice.interfaceCurrent.buttonRightTrigger )
-		tmpKey = '2';
-	else if( m_WiiDevice.interfaceCurrent.buttonMinus )
-		tmpKey = '-';
-	else if( m_WiiDevice.interfaceCurrent.buttonPlus )
-		tmpKey = '+';
-	else if( m_WiiDevice.interfaceCurrent.buttonX )
-		tmpKey = 'X';
-	else if( m_WiiDevice.interfaceCurrent.buttonY )
-		tmpKey = 'Y';
-	else if( m_WiiDevice.interfaceCurrent.buttonZL )
-		tmpKey = 'z';
-	else if( m_WiiDevice.interfaceCurrent.buttonZR )
-		tmpKey = 'Z';
+		WiiInterface_EnableExitToMenu();
+	// Hit Enter:
+	else if( m_WiiDevice.interfaceCurrent.buttonA || m_WiiDevice.interfaceCurrent.buttonB )
+		tmpKey = K_ENT;
+	// Handle navigation keys:
 	else if( m_WiiDevice.interfaceCurrent.dpadDown )
-		tmpKey = 'D';
+		tmpKey = K_DN;
 	else if( m_WiiDevice.interfaceCurrent.dpadLeft )
-		tmpKey = 'L';
+		tmpKey = K_LT;
 	else if( m_WiiDevice.interfaceCurrent.dpadRight )
-		tmpKey = 'R';
+		tmpKey = K_RT;
 	else if( m_WiiDevice.interfaceCurrent.dpadUp )
-		tmpKey = 'U';
-	else if( m_WiiDevice.interfaceCurrent.triggerLeft > WII_CLASSIC_CONTROLLER_THRESHOLD_TRIGGERS )
-		tmpKey = 't';
-	else if( m_WiiDevice.interfaceCurrent.triggerRight > WII_CLASSIC_CONTROLLER_THRESHOLD_TRIGGERS )
-		tmpKey = 'T';
-	else if( abs(m_WiiDevice.interfaceRelative.analogLeftX) > abs(m_WiiDevice.interfaceRelative.analogLeftY) )
-	{
-		if(	m_WiiDevice.interfaceRelative.analogLeftX < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
-			tmpKey = 'a';
-		else if( m_WiiDevice.interfaceRelative.analogLeftX > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
-			tmpKey = 'd';
-	}
-	else if( abs(m_WiiDevice.interfaceRelative.analogLeftX) < abs(m_WiiDevice.interfaceRelative.analogLeftY) )
-	{
-		if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
-			tmpKey = 's';
-		else if( m_WiiDevice.interfaceRelative.analogLeftY > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
-			tmpKey = 'w';
-	}
-	else if( abs(m_WiiDevice.interfaceRelative.analogRightX) > abs(m_WiiDevice.interfaceRelative.analogRightY) )
-	{
-		if(	m_WiiDevice.interfaceRelative.analogRightX < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
-			tmpKey = 'A';
-		else if( m_WiiDevice.interfaceRelative.analogRightX > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
-			tmpKey = 'D';
-	}
-	else if( abs(m_WiiDevice.interfaceRelative.analogRightX) < abs(m_WiiDevice.interfaceRelative.analogRightY) )
-	{
-		if( m_WiiDevice.interfaceRelative.analogRightY < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
-			tmpKey = 'S';
-		else if( m_WiiDevice.interfaceRelative.analogRightY > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
-			tmpKey = 'W';
-	}
+		tmpKey = K_UP;
 	
 	// Only override key value if repeating keys is allowed or the key is unique.
 	if( tmpKey != 0 && (m_flagRepeatKeys || prevKey != tmpKey) )
