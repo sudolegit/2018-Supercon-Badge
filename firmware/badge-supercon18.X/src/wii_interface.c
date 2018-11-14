@@ -171,14 +171,12 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 	static uint8_t		flagAccelActive		= FALSE;
 	static uint8_t		prevKey				= 0;
 	uint8_t				tmpKey				= 0;
-	int16_t				pos = (int16_t)WII_INTERFACE_THRESHOLD_ANALOG;
-	int16_t				neg = (int16_t)-WII_INTERFACE_THRESHOLD_ANALOG;
 	
 	// Do actions based on c-button state.
 	if( m_WiiDevice.interfaceCurrent.buttonC )
 	{
 		// Toggle repeated keys.
-		if( m_WiiDevice.interfaceRelative.analogLeftY > WII_INTERFACE_THRESHOLD_ANALOG )
+		if( m_WiiDevice.interfaceRelative.analogLeftY > WII_NUNCHUCK_THRESHOLD_ANALOG )
 		{
 			if( m_flagRepeatKeys )
 				WiiInterface_DisableRepeatedKeys();
@@ -186,7 +184,7 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 				WiiInterface_EnableRepeatedKeys();
 		}
 		// Exit back to main menu
-		else if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_INTERFACE_THRESHOLD_ANALOG )
+		else if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_NUNCHUCK_THRESHOLD_ANALOG )
 		{
 			WiiInterface_EnableExitToMenu();
 		}
@@ -211,16 +209,16 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 		{
 			if( abs(m_WiiDevice.interfaceRelative.accelX) > abs(m_WiiDevice.interfaceRelative.accelY) )
 			{
-				if(	m_WiiDevice.interfaceRelative.accelX < -WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+				if(	m_WiiDevice.interfaceRelative.accelX < -WII_NUNCHUCK_THRESHOLD_ACCELEROMETER )
 					tmpKey = K_LT;
-				else if( m_WiiDevice.interfaceRelative.accelX > WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+				else if( m_WiiDevice.interfaceRelative.accelX > WII_NUNCHUCK_THRESHOLD_ACCELEROMETER )
 					tmpKey = K_RT;
 			}
 			else
 			{
-				if( m_WiiDevice.interfaceRelative.accelY > WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+				if( m_WiiDevice.interfaceRelative.accelY > WII_NUNCHUCK_THRESHOLD_ACCELEROMETER )
 					tmpKey = K_DN;
-				else if( m_WiiDevice.interfaceRelative.accelY < -WII_INTERFACE_THRESHOLD_ACCELEROMETER )
+				else if( m_WiiDevice.interfaceRelative.accelY < -WII_NUNCHUCK_THRESHOLD_ACCELEROMETER )
 					tmpKey = K_UP;
 			}
 		}
@@ -230,16 +228,16 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 	{
 		if( abs(m_WiiDevice.interfaceRelative.analogLeftX) > abs(m_WiiDevice.interfaceRelative.analogLeftY) )
 		{
-			if(	m_WiiDevice.interfaceRelative.analogLeftX < -WII_INTERFACE_THRESHOLD_ANALOG )
+			if(	m_WiiDevice.interfaceRelative.analogLeftX < -WII_NUNCHUCK_THRESHOLD_ANALOG )
 				tmpKey = K_LT;
-			else if( m_WiiDevice.interfaceRelative.analogLeftX > WII_INTERFACE_THRESHOLD_ANALOG )
+			else if( m_WiiDevice.interfaceRelative.analogLeftX > WII_NUNCHUCK_THRESHOLD_ANALOG )
 				tmpKey = K_RT;
 		}
 		else
 		{
-			if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_INTERFACE_THRESHOLD_ANALOG )
+			if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_NUNCHUCK_THRESHOLD_ANALOG )
 				tmpKey = K_DN;
-			else if( m_WiiDevice.interfaceRelative.analogLeftY > WII_INTERFACE_THRESHOLD_ANALOG )
+			else if( m_WiiDevice.interfaceRelative.analogLeftY > WII_NUNCHUCK_THRESHOLD_ANALOG )
 				tmpKey = K_UP;
 		}
 		
@@ -265,6 +263,79 @@ static void WiiInterface_ProcessNunchuck(uint8_t *key)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void WiiInterface_ProcessClassicController(uint8_t *key)
 {
-	*key = 'B';
+	static uint8_t		prevKey				= 0;
+	uint8_t				tmpKey				= 0;
+	
+	// Exit back to main menu
+	if( m_WiiDevice.interfaceCurrent.buttonHome )
+		//WiiInterface_EnableExitToMenu();
+		tmpKey = 'H';
+	else if( m_WiiDevice.interfaceCurrent.buttonA )
+		tmpKey = 'A';
+	else if( m_WiiDevice.interfaceCurrent.buttonB )
+		tmpKey = 'B';
+	else if( m_WiiDevice.interfaceCurrent.buttonLeftTrigger )
+		tmpKey = '1';
+	else if( m_WiiDevice.interfaceCurrent.buttonRightTrigger )
+		tmpKey = '2';
+	else if( m_WiiDevice.interfaceCurrent.buttonMinus )
+		tmpKey = '-';
+	else if( m_WiiDevice.interfaceCurrent.buttonPlus )
+		tmpKey = '+';
+	else if( m_WiiDevice.interfaceCurrent.buttonX )
+		tmpKey = 'X';
+	else if( m_WiiDevice.interfaceCurrent.buttonY )
+		tmpKey = 'Y';
+	else if( m_WiiDevice.interfaceCurrent.buttonZL )
+		tmpKey = 'z';
+	else if( m_WiiDevice.interfaceCurrent.buttonZR )
+		tmpKey = 'Z';
+	else if( m_WiiDevice.interfaceCurrent.dpadDown )
+		tmpKey = 'D';
+	else if( m_WiiDevice.interfaceCurrent.dpadLeft )
+		tmpKey = 'L';
+	else if( m_WiiDevice.interfaceCurrent.dpadRight )
+		tmpKey = 'R';
+	else if( m_WiiDevice.interfaceCurrent.dpadUp )
+		tmpKey = 'U';
+	else if( m_WiiDevice.interfaceCurrent.triggerLeft > WII_CLASSIC_CONTROLLER_THRESHOLD_TRIGGERS )
+		tmpKey = 't';
+	else if( m_WiiDevice.interfaceCurrent.triggerRight > WII_CLASSIC_CONTROLLER_THRESHOLD_TRIGGERS )
+		tmpKey = 'T';
+	else if( abs(m_WiiDevice.interfaceRelative.analogLeftX) > abs(m_WiiDevice.interfaceRelative.analogLeftY) )
+	{
+		if(	m_WiiDevice.interfaceRelative.analogLeftX < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
+			tmpKey = 'a';
+		else if( m_WiiDevice.interfaceRelative.analogLeftX > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
+			tmpKey = 'd';
+	}
+	else if( abs(m_WiiDevice.interfaceRelative.analogLeftX) < abs(m_WiiDevice.interfaceRelative.analogLeftY) )
+	{
+		if( m_WiiDevice.interfaceRelative.analogLeftY < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
+			tmpKey = 's';
+		else if( m_WiiDevice.interfaceRelative.analogLeftY > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_LEFT )
+			tmpKey = 'w';
+	}
+	else if( abs(m_WiiDevice.interfaceRelative.analogRightX) > abs(m_WiiDevice.interfaceRelative.analogRightY) )
+	{
+		if(	m_WiiDevice.interfaceRelative.analogRightX < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
+			tmpKey = 'A';
+		else if( m_WiiDevice.interfaceRelative.analogRightX > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
+			tmpKey = 'D';
+	}
+	else if( abs(m_WiiDevice.interfaceRelative.analogRightX) < abs(m_WiiDevice.interfaceRelative.analogRightY) )
+	{
+		if( m_WiiDevice.interfaceRelative.analogRightY < -WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
+			tmpKey = 'S';
+		else if( m_WiiDevice.interfaceRelative.analogRightY > WII_CLASSIC_CONTROLLER_THRESHOLD_ANALOG_RIGHT )
+			tmpKey = 'W';
+	}
+	
+	// Only override key value if repeating keys is allowed or the key is unique.
+	if( tmpKey != 0 && (m_flagRepeatKeys || prevKey != tmpKey) )
+		*key = tmpKey;
+	
+	prevKey = tmpKey;
+	
 }
 
