@@ -339,22 +339,22 @@ void badge_menu(void)
 				sound_set_note(0,1);
 				sound_set_note(0,2);
 				
-				// Return screen to original state:
-				enable_display_scanning(1);
-				video_clrscr();
-				video_set_color(15,0);
-				set_cursor_state(1);
+                // Return screen to original state:
 				showmenu();
-				show_version();
+                enable_display_scanning(1);
+				display_refresh_force();
 				
 				// Return menu navigation back to first entry:
-				entry = 0;
+				actualMenuPointer		= 0;
+                menu_pointer			= 0;
+				menu_buff[menu_pointer]	= 0;
+				entry					= 0;
 				
-				// HACK:  Set key to enter to force screen refresh.
-				char_out = NEWLINE;
+				continue;
 			}
+			
 			// Handle navigation buttons.
-			else if( char_out==K_UP || char_out==K_DN || char_out==K_LT || char_out==K_RT )
+			if( char_out==K_UP || char_out==K_DN ) //|| char_out==K_LT || char_out==K_RT )
 			{
 				
 				// shift entry based on button press.
@@ -401,7 +401,7 @@ void badge_menu(void)
 				clear_prompt();
 				stdio_write(&tmp[0]);
 			}
-			else
+			else if( char_out!=K_LT && char_out!=K_RT )
 			{
 				// Override internal buffer pointer with value from most recent navigation button 
 				// press and erase tracking value to prevent further overrides.
